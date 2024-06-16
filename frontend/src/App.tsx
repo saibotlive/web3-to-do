@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
-import { abi, contractAddress, ethereumNetworkUrl } from './constants'; // Import your contract ABI and address
+import { abi } from './constants';
+import { contractAddress, ethereumNetworkUrl } from './constants';
 
 interface Task {
   id: string;
@@ -15,6 +16,11 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
+      if (!contractAddress || !ethereumNetworkUrl) {
+        console.error('Contract address or Ethereum network URL is not set.');
+        return;
+      }
+
       const provider = new ethers.JsonRpcProvider(ethereumNetworkUrl);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(contractAddress, abi, signer);
@@ -23,9 +29,10 @@ const App: React.FC = () => {
       const tasksArray: Task[] = [];
       for (let i = 1; i <= taskCount; i++) {
         const task = await contract.todos(i);
-        if (!task.id.eq(0)) {
+        const taskId = BigInt(task.id); // Convert to BigInt for comparison
+        if (taskId !== BigInt(0)) {
           tasksArray.push({
-            id: task.id.toString(),
+            id: taskId.toString(),
             task: task.task,
             completed: task.completed,
           });
@@ -71,7 +78,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="container max-w-3xl mx-auto p-4">
+    <div className="container max-w-3xl mx-auto p-5">
       <h1 className="text-2xl font-bold mb-5">Decentralized To-Do List</h1>
       <TaskForm onCreate={createTask} />
       <TaskList tasks={tasks} onToggle={toggleComplete} onUpdate={updateTask} onDelete={deleteTask} />
