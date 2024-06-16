@@ -21,8 +21,8 @@ This project is a decentralized to-do list application built using Solidity, Har
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/decentralized-todo-list.git
-cd decentralized-todo-list
+git clone https://github.com/saibotlive/web3-to-do.git
+cd web3-to-do
 ```
 
 ### Install Dependencies
